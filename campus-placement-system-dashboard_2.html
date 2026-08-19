@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Campus Placement Management System</title>
+<style>
+  *{ box-sizing:border-box; }
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#eef0f2;
+    color:#000000;
+    margin:0;
+  }
+
+  /* ---------- Sidebar: position:fixed ---------- */
+  .sidebar{
+    position:fixed;
+    top:0; left:0; bottom:0;
+    width:200px;
+    background:#003366;
+    color:#ffffff;
+    padding:20px 0;
+  }
+  .sidebar h1{
+    font-size:16px;
+    margin:0 0 20px 0;
+    padding:0 18px;
+  }
+  /* Flexbox: nav items stacked in a column, evenly spaced */
+  .sidebar ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .sidebar li{ margin:0; }
+  .sidebar a{
+    display:block;
+    color:#ffffff;
+    text-decoration:none;
+    padding:10px 18px;
+    font-size:13px;
+    border-left:3px solid transparent;
+  }
+  .sidebar a:hover{
+    background:#00509e;
+    border-left:3px solid #ffffff;
+  }
+
+  /* ---------- Main content ---------- */
+  .main{
+    margin-left:200px;
+    padding:22px 28px 60px;
+  }
+  /* Flexbox: title/subtitle block on the left, action button on the right */
+  .topbar{
+    background:#ffffff;
+    border:1px solid #cccccc;
+    padding:14px 18px;
+    margin-bottom:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .topbar h2{
+    margin:0;
+    color:#003366;
+    font-size:19px;
+  }
+  .topbar p{
+    margin:4px 0 0;
+    font-size:12.5px;
+    color:#555555;
+  }
+
+  /* ---------- Panels ---------- */
+  .panel{
+    background:#ffffff;
+    border:1px solid #cccccc;
+    padding:16px 18px;
+    margin-bottom:18px;
+    vertical-align:top;
+  }
+  .panel h3{
+    margin:0 0 10px;
+    color:#003366;
+    font-size:15px;
+    border-bottom:1px solid #dddddd;
+    padding-bottom:8px;
+  }
+  .panel-note{
+    font-size:12px;
+    color:#555555;
+    margin:0 0 10px;
+  }
+
+  /* CSS Grid: two equal panels per row, gap replaces manual margins */
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  .grid-2 .panel{ margin-bottom:0; }
+
+  /* CSS Grid: three equal stat boxes */
+  .stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:14px;
+    margin-bottom:16px;
+  }
+
+  /* ---------- Tables ---------- */
+  table{
+    border-collapse:collapse;
+    width:100%;
+  }
+  th, td{
+    border:1px solid #cccccc;
+    padding:7px 9px;
+    text-align:left;
+    font-size:13px;
+  }
+  th{ background:#f2f2f2; }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-block;
+    background:#003366;
+    color:#ffffff;
+    text-decoration:none;
+    font-size:12px;
+    padding:6px 14px;
+    border:none;
+    border-radius:3px;
+  }
+  .btn:hover{ background:#00509e; }
+  .btn-green{ background:#1e7a3c; }
+  .btn-green:hover{ background:#25984b; }
+  .btn-red{ background:#a83232; }
+  .btn-red:hover{ background:#c94040; }
+  .btn-outline{
+    display:inline-block;
+    background:#ffffff;
+    color:#003366;
+    text-decoration:none;
+    font-size:12px;
+    padding:5px 13px;
+    border:1px solid #003366;
+    border-radius:3px;
+  }
+  .btn-outline:hover{ background:#eef0f2; }
+
+  /* ---------- Lists ---------- */
+  ul.plain{
+    margin:0;
+    padding-left:18px;
+    font-size:13px;
+    line-height:1.7;
+  }
+
+  /* ---------- Status text ---------- */
+  .status-selected{ color:#1e7a3c; font-weight:bold; }
+  .status-shortlisted{ color:#a5760f; font-weight:bold; }
+  .status-rejected{ color:#a83232; font-weight:bold; }
+  .status-applied{ color:#003366; font-weight:bold; }
+
+  /* ---------- Bars ---------- */
+  .bar-outer{
+    border:1px solid #cccccc;
+    width:100%;
+    height:14px;
+    background:#f2f2f2;
+  }
+  .bar-inner{ background:#003366; height:100%; }
+
+  /* ---------- Stat boxes (children of .stats-grid) ---------- */
+  .stat{
+    text-align:center;
+    border:1px solid #cccccc;
+    padding:14px 4px;
+  }
+  .stat .num{ font-size:22px; font-weight:bold; color:#003366; }
+  .stat .cap{ font-size:11px; color:#555555; }
+
+  /* ---------- z-index: "New" ribbon layered above the panel ---------- */
+  .panel-relative{ position:relative; }
+  .ribbon{
+    position:absolute;
+    top:-9px;
+    right:14px;
+    background:#a5760f;
+    color:#ffffff;
+    font-size:11px;
+    font-weight:bold;
+    padding:4px 10px;
+    border-radius:3px;
+    z-index:10;
+  }
+
+  /* Flexbox: button groups sit in a row with consistent gaps */
+  .btn-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+
+  footer{
+    text-align:center;
+    font-size:11.5px;
+    color:#555555;
+    padding:16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1>SRM Placement Cell</h1>
+  <ul>
+    <li><a href="#login">Login</a></li>
+    <li><a href="#profile">Profile</a></li>
+    <li><a href="#jobs">Job Postings</a></li>
+    <li><a href="#eligibility">Eligibility</a></li>
+    <li><a href="#applications">Applications</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#admin">Admin</a></li>
+  </ul>
+</div>
+
+<div class="main">
+
+  <div class="topbar">
+    <div>
+      <h2>Placement Dashboard</h2>
+      <p>Overview of logins, postings, applications, and placement statistics.</p>
+    </div>
+    <a href="#dashboard" class="btn">Export All Data</a>
+  </div>
+
+  <!-- LOGIN + PROFILE (CSS Grid: two panels per row) -->
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div id="login" class="panel">
+      <h3>Student &amp; Recruiter Login</h3>
+      <p class="panel-note">Fields shown in a table; form inputs are outside this unit's scope.</p>
+      <table style="margin-bottom:10px;">
+        <tr><th colspan="2">Student Login</th></tr>
+        <tr><td>Register Number</td><td>RA2211026010123</td></tr>
+        <tr><td>Password</td><td>********</td></tr>
+      </table>
+      <div class="btn-row">
+        <a href="#profile" class="btn">Login as Student</a>
+        <a href="#profile" class="btn-outline">Login as Recruiter</a>
+      </div>
+    </div>
+
+    <div id="profile" class="panel">
+      <h3>Student Profile</h3>
+      <table>
+        <tr><td>Name</td><td>Daksh P.</td></tr>
+        <tr><td>Branch</td><td>CSE (Hons. FinTech)</td></tr>
+        <tr><td>CGPA</td><td>9.44</td></tr>
+        <tr><td>Skills</td><td>React, Node.js, FastAPI, scikit-learn</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- JOB POSTINGS -->
+  <div id="jobs" class="panel panel-relative">
+    <span class="ribbon">New</span>
+    <h3>Company &amp; Job Postings</h3>
+    <p class="panel-note">Category row uses colspan to group postings. The "New" tag is layered above the panel edge with z-index.</p>
+    <table>
+      <tr><th>Company</th><th>Role</th><th>CTC (LPA)</th><th>Location</th><th></th></tr>
+      <tr><td colspan="5"><strong>Product Companies</strong></td></tr>
+      <tr><td>Zenith Labs</td><td>SDE Intern</td><td>12</td><td>Bengaluru</td><td><a href="#applications" class="btn">Apply</a></td></tr>
+      <tr><td>Northbridge</td><td>Frontend Engineer</td><td>14</td><td>Hyderabad</td><td><a href="#applications" class="btn">Apply</a></td></tr>
+      <tr><td colspan="5"><strong>FinTech Companies</strong></td></tr>
+      <tr><td>Ledgerly</td><td>Full Stack Intern</td><td>10</td><td>Chennai</td><td><a href="#applications" class="btn">Apply</a></td></tr>
+      <tr><td>Vantage Pay</td><td>Software Engineer</td><td>16</td><td>Remote</td><td><a href="#applications" class="btn">Apply</a></td></tr>
+    </table>
+  </div>
+
+  <!-- ELIGIBILITY + ADMIN (CSS Grid: two panels per row) -->
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div id="eligibility" class="panel">
+      <h3>Eligibility Filtering</h3>
+      <ul class="plain">
+        <li>Branch: CSE, IT, AI &amp; DS</li>
+        <li>Minimum CGPA: 7.5</li>
+        <li>Active Backlogs: 0</li>
+        <li>Graduation Year: 2027</li>
+      </ul>
+      <br>
+      <a href="#jobs" class="btn">Apply Filter</a>
+    </div>
+
+    <div id="admin" class="panel">
+      <h3>Admin Panel</h3>
+      <table>
+        <tr><th>Task</th><th>Pending</th><th></th></tr>
+        <tr>
+          <td>Company Approvals</td><td>5</td>
+          <td><div class="btn-row"><a href="#" class="btn btn-green">Approve</a><a href="#" class="btn btn-red">Reject</a></div></td>
+        </tr>
+        <tr>
+          <td>Job Postings Review</td><td>3</td>
+          <td><div class="btn-row"><a href="#" class="btn btn-green">Approve</a><a href="#" class="btn btn-red">Reject</a></div></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- APPLICATIONS -->
+  <div id="applications" class="panel">
+    <h3>Application Tracking</h3>
+    <table>
+      <tr><th>Company</th><th>Role</th><th>Applied On</th><th>Status</th><th></th></tr>
+      <tr><td>Zenith Labs</td><td>SDE Intern</td><td>02 Aug 2026</td><td class="status-shortlisted">Shortlisted</td><td><div class="btn-row"><a href="#" class="btn-outline">View</a></div></td></tr>
+      <tr><td>Ledgerly</td><td>Full Stack Intern</td><td>05 Aug 2026</td><td class="status-selected">Selected</td><td><div class="btn-row"><a href="#" class="btn-outline">View</a></div></td></tr>
+      <tr><td>Northbridge</td><td>Frontend Engineer</td><td>07 Aug 2026</td><td class="status-applied">Applied</td><td><div class="btn-row"><a href="#" class="btn-outline">View</a></div></td></tr>
+      <tr><td>Vantage Pay</td><td>Software Engineer</td><td>10 Aug 2026</td><td class="status-rejected">Rejected</td><td><div class="btn-row"><a href="#" class="btn-outline">View</a></div></td></tr>
+    </table>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="panel">
+    <h3>Placement Statistics Dashboard</h3>
+    <div class="stats-grid">
+      <div class="stat"><div class="num">412</div><div class="cap">STUDENTS PLACED</div></div>
+      <div class="stat"><div class="num">61</div><div class="cap">RECRUITERS</div></div>
+      <div class="stat"><div class="num">14.2</div><div class="cap">AVG. CTC (LPA)</div></div>
+    </div>
+
+    <p class="panel-note" style="margin-top:16px;">Branch-wise placement rate:</p>
+    <p style="font-size:13px;margin-bottom:2px;">CSE - 82%</p>
+    <div class="bar-outer"><div class="bar-inner" style="width:82%;"></div></div>
+    <p style="font-size:13px;margin:10px 0 2px;">IT - 74%</p>
+    <div class="bar-outer"><div class="bar-inner" style="width:74%;"></div></div>
+    <p style="font-size:13px;margin:10px 0 2px;">AI &amp; DS - 68%</p>
+    <div class="bar-outer"><div class="bar-inner" style="width:68%;"></div></div>
+
+    <div style="margin-top:16px;">
+      <a href="#" class="btn">Export Report</a>
+    </div>
+  </div>
+
+  <footer>Campus Placement Management System &middot; 21CSE354T Unit 1, HTML &amp; CSS Overview</footer>
+
+</div>
+
+</body>
+</html>
