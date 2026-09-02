@@ -350,5 +350,435 @@
 
 </div>
 
+<script>
+/* ========================================================
+   Campus Placement Management System — JavaScript
+   ======================================================== */
+
+/* ---------- 1. Toast Notification System ---------- */
+(function initToastSystem() {
+  const container = document.createElement('div');
+  container.id = 'toast-container';
+  Object.assign(container.style, {
+    position: 'fixed', bottom: '24px', right: '24px',
+    zIndex: '9999', display: 'flex', flexDirection: 'column', gap: '10px'
+  });
+  document.body.appendChild(container);
+})();
+
+function showToast(message, type) {
+  type = type || 'info';
+  var colors = { success: '#1e7a3c', error: '#a83232', info: '#003366', warning: '#a5760f' };
+  var toast = document.createElement('div');
+  Object.assign(toast.style, {
+    background: colors[type] || colors.info, color: '#fff',
+    padding: '10px 20px', borderRadius: '4px', fontSize: '13px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.2)', opacity: '0',
+    transition: 'opacity 0.3s ease, transform 0.3s ease',
+    transform: 'translateY(10px)', maxWidth: '340px'
+  });
+  toast.textContent = message;
+  document.getElementById('toast-container').appendChild(toast);
+  // Animate in
+  requestAnimationFrame(function() {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+  });
+  // Auto-remove after 3s
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 3000);
+}
+
+/* ---------- 2. Smooth-scroll Sidebar Navigation ---------- */
+(function initSidebarNav() {
+  var links = document.querySelectorAll('.sidebar a');
+  links.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var href = this.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        var target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Mark active
+        links.forEach(function(l) {
+          l.style.background = '';
+          l.style.borderLeftColor = 'transparent';
+        });
+        this.style.background = '#00509e';
+        this.style.borderLeftColor = '#ffffff';
+      }
+    });
+  });
+
+  // Highlight sidebar link on scroll
+  var sections = [];
+  links.forEach(function(link) {
+    var id = link.getAttribute('href');
+    if (id && id.startsWith('#')) {
+      var el = document.querySelector(id);
+      if (el) sections.push({ el: el, link: link });
+    }
+  });
+
+  window.addEventListener('scroll', function() {
+    var scrollPos = window.scrollY + 120;
+    var current = null;
+    sections.forEach(function(s) {
+      if (s.el.offsetTop <= scrollPos) current = s;
+    });
+    links.forEach(function(l) {
+      l.style.background = '';
+      l.style.borderLeftColor = 'transparent';
+    });
+    if (current) {
+      current.link.style.background = '#00509e';
+      current.link.style.borderLeftColor = '#ffffff';
+    }
+  });
+})();
+
+/* ---------- 3. Login Toggle (Student / Recruiter) ---------- */
+(function initLoginToggle() {
+  var loginPanel = document.getElementById('login');
+  if (!loginPanel) return;
+  var btnRow = loginPanel.querySelector('.btn-row');
+  if (!btnRow) return;
+
+  var studentBtn = btnRow.children[0];
+  var recruiterBtn = btnRow.children[1];
+  var table = loginPanel.querySelector('table');
+
+  var studentHTML = '<tr><th colspan="2">Student Login</th></tr>' +
+    '<tr><td>Register Number</td><td>RA2211026010123</td></tr>' +
+    '<tr><td>Password</td><td>********</td></tr>';
+
+  var recruiterHTML = '<tr><th colspan="2">Recruiter Login</th></tr>' +
+    '<tr><td>Company ID</td><td>REC-20260801</td></tr>' +
+    '<tr><td>Email</td><td>hr@zenith-labs.com</td></tr>' +
+    '<tr><td>Password</td><td>********</td></tr>';
+
+  studentBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    table.innerHTML = studentHTML;
+    studentBtn.className = 'btn';
+    recruiterBtn.className = 'btn-outline';
+    showToast('Logged in as Student', 'success');
+  });
+
+  recruiterBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    table.innerHTML = recruiterHTML;
+    recruiterBtn.className = 'btn';
+    studentBtn.className = 'btn-outline';
+    showToast('Logged in as Recruiter', 'success');
+  });
+})();
+
+/* ---------- 4. Job Apply Buttons ---------- */
+(function initJobApply() {
+  var jobsPanel = document.getElementById('jobs');
+  if (!jobsPanel) return;
+  var applyBtns = jobsPanel.querySelectorAll('.btn');
+
+  applyBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var row = this.closest('tr');
+      if (!row) return;
+      var cells = row.querySelectorAll('td');
+      if (cells.length < 4) return;
+
+      var company = cells[0].textContent;
+      var role    = cells[1].textContent;
+      var today   = new Date();
+      var dateStr = ('0' + today.getDate()).slice(-2) + ' ' +
+        today.toLocaleString('en-US', { month: 'short' }) + ' ' + today.getFullYear();
+
+      // Check if already applied
+      var appTable = document.querySelector('#applications table');
+      var existingRows = appTable.querySelectorAll('tr');
+      for (var i = 1; i < existingRows.length; i++) {
+        var c = existingRows[i].querySelectorAll('td');
+        if (c.length >= 2 && c[0].textContent === company && c[1].textContent === role) {
+          showToast('Already applied to ' + company + ' – ' + role, 'warning');
+          return;
+        }
+      }
+
+      // Add row to Applications table
+      var newRow = appTable.insertRow(-1);
+      newRow.style.animation = 'fadeIn 0.4s ease';
+      newRow.innerHTML =
+        '<td>' + company + '</td>' +
+        '<td>' + role + '</td>' +
+        '<td>' + dateStr + '</td>' +
+        '<td class="status-applied">Applied</td>' +
+        '<td><div class="btn-row"><a href="#" class="btn-outline view-app-btn">View</a></div></td>';
+
+      // Disable this apply button
+      this.textContent = 'Applied';
+      this.style.background = '#999';
+      this.style.pointerEvents = 'none';
+
+      showToast('Applied to ' + company + ' — ' + role, 'success');
+
+      // Scroll to applications
+      document.getElementById('applications').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+})();
+
+/* ---------- 5. Application "View" Buttons ---------- */
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('view-app-btn') || 
+      (e.target.classList.contains('btn-outline') && e.target.textContent.trim() === 'View')) {
+    e.preventDefault();
+    var row = e.target.closest('tr');
+    if (!row) return;
+    var cells = row.querySelectorAll('td');
+    if (cells.length < 4) return;
+    var company = cells[0].textContent;
+    var role = cells[1].textContent;
+    var date = cells[2].textContent;
+    var status = cells[3].textContent;
+    showToast(company + ' | ' + role + '\nApplied: ' + date + ' | Status: ' + status, 'info');
+  }
+});
+
+/* ---------- 6. Eligibility Filter ---------- */
+(function initEligibilityFilter() {
+  var eligPanel = document.getElementById('eligibility');
+  if (!eligPanel) return;
+  var filterBtn = eligPanel.querySelector('.btn');
+  if (!filterBtn) return;
+
+  filterBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    var jobTable = document.querySelector('#jobs table');
+    if (!jobTable) return;
+
+    var dataRows = jobTable.querySelectorAll('tr');
+    var visibleCount = 0;
+    dataRows.forEach(function(row, idx) {
+      if (idx === 0) return; // header
+      var cells = row.querySelectorAll('td');
+      // Skip category header rows (colspan)
+      if (cells.length === 1) return;
+      if (cells.length >= 3) {
+        var ctc = parseFloat(cells[2].textContent);
+        if (ctc < 12) {
+          row.style.opacity = '0.35';
+          row.style.textDecoration = 'line-through';
+        } else {
+          row.style.opacity = '1';
+          row.style.textDecoration = 'none';
+          visibleCount++;
+        }
+      }
+    });
+
+    if (this.textContent === 'Apply Filter') {
+      this.textContent = 'Reset Filter';
+      this.classList.add('btn-red');
+      this.classList.remove('btn');
+      this.className = 'btn btn-red';
+      showToast('Filter applied — ' + visibleCount + ' eligible postings (CTC ≥ 12 LPA)', 'info');
+    } else {
+      dataRows.forEach(function(row) {
+        row.style.opacity = '1';
+        row.style.textDecoration = 'none';
+      });
+      this.textContent = 'Apply Filter';
+      this.className = 'btn';
+      showToast('Filter reset — all postings visible', 'info');
+    }
+  });
+})();
+
+/* ---------- 7. Admin Approve / Reject ---------- */
+(function initAdminActions() {
+  var adminPanel = document.getElementById('admin');
+  if (!adminPanel) return;
+
+  adminPanel.addEventListener('click', function(e) {
+    if (!e.target.classList.contains('btn')) return;
+    var isApprove = e.target.classList.contains('btn-green');
+    var isReject = e.target.classList.contains('btn-red');
+    if (!isApprove && !isReject) return;
+
+    e.preventDefault();
+    var row = e.target.closest('tr');
+    if (!row) return;
+    var cells = row.querySelectorAll('td');
+    if (cells.length < 2) return;
+
+    var taskName = cells[0].textContent;
+    var pendingCell = cells[1];
+    var count = parseInt(pendingCell.textContent, 10);
+
+    if (count <= 0) {
+      showToast('No pending items for ' + taskName, 'warning');
+      return;
+    }
+
+    count--;
+    pendingCell.textContent = count;
+
+    if (isApprove) {
+      showToast(taskName + ' approved! ' + count + ' remaining.', 'success');
+    } else {
+      showToast(taskName + ' rejected. ' + count + ' remaining.', 'error');
+    }
+
+    if (count === 0) {
+      pendingCell.style.color = '#1e7a3c';
+      pendingCell.style.fontWeight = 'bold';
+      pendingCell.textContent = '✓ Done';
+    }
+  });
+})();
+
+/* ---------- 8. Export Report (CSV Download) ---------- */
+(function initExport() {
+  // "Export All Data" in topbar
+  var exportAllBtn = document.querySelector('.topbar .btn');
+  if (exportAllBtn) {
+    exportAllBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      exportTableToCSV('#applications table', 'placement_applications.csv');
+    });
+  }
+  // "Export Report" in dashboard
+  var dashPanel = document.getElementById('dashboard');
+  if (dashPanel) {
+    var exportBtn = dashPanel.querySelector('.btn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        exportTableToCSV('#applications table', 'placement_report.csv');
+      });
+    }
+  }
+})();
+
+function exportTableToCSV(selector, filename) {
+  var table = document.querySelector(selector);
+  if (!table) { showToast('No data to export', 'error'); return; }
+  var csv = [];
+  var rows = table.querySelectorAll('tr');
+  rows.forEach(function(row) {
+    var cols = row.querySelectorAll('th, td');
+    var rowData = [];
+    cols.forEach(function(col) {
+      var text = col.textContent.replace(/"/g, '""');
+      rowData.push('"' + text + '"');
+    });
+    csv.push(rowData.join(','));
+  });
+  var blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported ' + filename, 'success');
+}
+
+/* ---------- 9. Animated Stat Counters ---------- */
+(function initAnimatedCounters() {
+  var stats = document.querySelectorAll('.stat .num');
+  var animated = false;
+
+  function animateCounters() {
+    if (animated) return;
+    animated = true;
+    stats.forEach(function(el) {
+      var target = parseFloat(el.textContent);
+      var isFloat = el.textContent.indexOf('.') !== -1;
+      var duration = 1200;
+      var start = performance.now();
+
+      function update(now) {
+        var elapsed = now - start;
+        var progress = Math.min(elapsed / duration, 1);
+        // Ease-out cubic
+        var ease = 1 - Math.pow(1 - progress, 3);
+        var current = target * ease;
+        el.textContent = isFloat ? current.toFixed(1) : Math.floor(current);
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      el.textContent = isFloat ? '0.0' : '0';
+      requestAnimationFrame(update);
+    });
+  }
+
+  // Use IntersectionObserver to trigger when dashboard is visible
+  var dashboard = document.getElementById('dashboard');
+  if (dashboard && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animateCounters();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(dashboard);
+  } else {
+    animateCounters();
+  }
+})();
+
+/* ---------- 10. Animated Progress Bars ---------- */
+(function initProgressBars() {
+  var bars = document.querySelectorAll('.bar-inner');
+  bars.forEach(function(bar) {
+    var targetWidth = bar.style.width;
+    bar.style.width = '0%';
+    bar.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  });
+
+  var dashboard = document.getElementById('dashboard');
+  if (dashboard && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var bars = entry.target.querySelectorAll('.bar-inner');
+          var widths = ['82%', '74%', '68%'];
+          bars.forEach(function(bar, i) {
+            setTimeout(function() {
+              bar.style.width = widths[i] || '50%';
+            }, i * 200);
+          });
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.2 });
+    observer.observe(dashboard);
+  }
+})();
+
+/* ---------- 11. Fade-in Animation Keyframe ---------- */
+(function injectKeyframes() {
+  var style = document.createElement('style');
+  style.textContent = '@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }';
+  document.head.appendChild(style);
+})();
+
+/* ---------- 12. Keyboard Shortcut (Ctrl+E to export) ---------- */
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+    e.preventDefault();
+    exportTableToCSV('#applications table', 'placement_export.csv');
+  }
+});
+</script>
+
 </body>
 </html>
