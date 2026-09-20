@@ -1,0 +1,230 @@
+/* Ported from campus-placement-system-dashboard_2.html.
+   Visual design is unchanged; only the markup that uses it moved to React. */
+
+*{ box-sizing:border-box; }
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background:#eef0f2;
+  color:#000000;
+  margin:0;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:fixed;
+  top:0; left:0; bottom:0;
+  width:200px;
+  background:#003366;
+  color:#ffffff;
+  padding:20px 0;
+}
+.sidebar h1{ font-size:16px; margin:0 0 20px 0; padding:0 18px; }
+.sidebar ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+.sidebar a{
+  display:block;
+  color:#ffffff;
+  text-decoration:none;
+  padding:10px 18px;
+  font-size:13px;
+  border-left:3px solid transparent;
+}
+.sidebar a:hover{ background:#00509e; border-left-color:#ffffff; }
+.sidebar a.active{ background:#00509e; border-left-color:#ffffff; }
+
+/* ---------- Main content ---------- */
+.main{ margin-left:200px; padding:22px 28px 60px; }
+.topbar{
+  background:#ffffff;
+  border:1px solid #cccccc;
+  padding:14px 18px;
+  margin-bottom:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.topbar h2{ margin:0; color:#003366; font-size:19px; }
+.topbar p{ margin:4px 0 0; font-size:12.5px; color:#555555; }
+
+/* ---------- Panels ---------- */
+
+
+.panel-note{ font-size:12px; color:#555555; margin:0 0 10px; }
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+.grid-2 .panel{ margin-bottom:0; height:100%; }
+.stats-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:16px; }
+
+/* ---------- Tables ---------- */
+table{ border-collapse:collapse; width:100%; }
+table.spaced{ margin-bottom:10px; }
+th, td{ border:1px solid #cccccc; padding:7px 9px; text-align:left; font-size:13px; }
+th{ background:#f2f2f2; }
+.cell-done{ color:#1e7a3c; font-weight:bold; }
+.row-filtered{ opacity:0.35; text-decoration:line-through; }
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-block;
+  background:#003366;
+  color:#ffffff;
+  font-family:inherit;
+  font-size:12px;
+  padding:6px 14px;
+  border:none;
+  border-radius:3px;
+  cursor:pointer;
+}
+.btn:hover{ background:#00509e; }
+.btn-green{ background:#1e7a3c; }
+.btn-green:hover{ background:#25984b; }
+.btn-red{ background:#a83232; }
+.btn-red:hover{ background:#c94040; }
+.btn-muted{ background:#999999; cursor:default; }
+.btn-muted:hover{ background:#999999; }
+.btn:disabled{ cursor:default; }
+.btn-outline{
+  display:inline-block;
+  background:#ffffff;
+  color:#003366;
+  font-family:inherit;
+  font-size:12px;
+  padding:5px 13px;
+  border:1px solid #003366;
+  border-radius:3px;
+  cursor:pointer;
+}
+.btn-outline:hover{ background:#eef0f2; }
+.btn-row{ display:flex; gap:8px; align-items:center; }
+.spaced-top{ margin-top:16px; }
+
+/* ---------- Lists ---------- */
+ul.plain{ margin:0; padding-left:18px; font-size:13px; line-height:1.7; }
+
+/* ---------- Status text ---------- */
+.status-selected{ color:#1e7a3c; font-weight:bold; }
+.status-shortlisted{ color:#a5760f; font-weight:bold; }
+.status-rejected{ color:#a83232; font-weight:bold; }
+.status-applied{ color:#003366; font-weight:bold; }
+
+/* ---------- Bars ---------- */
+.bar-block{ margin-bottom:10px; }
+.bar-label{ font-size:13px; margin:0 0 2px; }
+.bar-outer{ border:1px solid #cccccc; width:100%; height:14px; background:#f2f2f2; }
+.bar-inner{
+  background:#003366;
+  height:100%;
+  width:0;
+  transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ---------- Stat boxes ---------- */
+
+
+
+
+/* ---------- "New" ribbon ---------- */
+
+
+
+/* ---------- Toasts (rendered through a portal) ---------- */
+.toast-container{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.toast{
+  color:#ffffff;
+  padding:10px 20px;
+  border-radius:4px;
+  font-size:13px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  max-width:340px;
+  cursor:pointer;
+  animation: toastIn 0.3s ease;
+}
+.toast-info{ background:#003366; }
+.toast-success{ background:#1e7a3c; }
+.toast-error{ background:#a83232; }
+.toast-warning{ background:#a5760f; }
+
+@keyframes toastIn{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.row-enter{ animation: fadeIn 0.4s ease; }
+@keyframes fadeIn{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* ---------- Error boundary fallback ---------- */
+.error-screen{
+  margin:60px auto;
+  max-width:420px;
+  background:#ffffff;
+  border:1px solid #cccccc;
+  padding:24px;
+  text-align:center;
+}
+.error-screen h2{ color:#a83232; font-size:17px; margin:0 0 8px; }
+.error-screen p{ font-size:13px; color:#555555; }
+
+@media (max-width: 760px){
+  .sidebar{ position:static; width:auto; bottom:auto; }
+  .main{ margin-left:0; padding:16px; }
+  .grid-2, .stats-grid{ grid-template-columns:1fr; }
+}
+
+/* ---------- Forms ---------- */
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  max-width:460px;
+}
+.form-inline{ margin-bottom:14px; max-width:340px; }
+.field{ display:flex; flex-direction:column; gap:4px; }
+.field-label{ font-size:12.5px; font-weight:bold; color:#003366; }
+.field-hint{ font-size:11.5px; color:#777777; }
+.field-error{ font-size:11.5px; color:#a83232; font-weight:bold; }
+.input{
+  font-family:inherit;
+  font-size:13px;
+  padding:6px 8px;
+  border:1px solid #aaaaaa;
+  border-radius:3px;
+  background:#ffffff;
+  color:#000000;
+  width:100%;
+}
+.input:focus{ outline:2px solid #00509e; outline-offset:1px; }
+input[type="checkbox"].input, .field input[type="checkbox"]{ width:auto; }
+
+/* Checkbox row: control first, label beside it. */
+.field-inline{
+  flex-direction:row;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.field-inline .field-label{ order:2; font-weight:normal; }
+.field-inline .field-error,
+.field-inline .field-hint{ order:3; flex-basis:100%; }
+textarea.input{ resize:vertical; }
+
+.who{ font-size:12px; color:#555555; margin-right:4px; }
+.visually-quiet{
+  font-size:12px;
+  color:#555555;
+  margin:0 0 10px;
+  font-weight:normal;
+}
+.visually-quiet:focus{ outline:none; }
+a.btn, a.btn-outline{ text-decoration:none; }
+.panel-note{ font-size:12px; color:#555555; margin:0 0 10px; }

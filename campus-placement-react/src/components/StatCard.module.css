@@ -1,0 +1,19 @@
+/* CSS Module scoped to StatCard.jsx */
+
+.stat {
+  text-align: center;
+  border: 1px solid #cccccc;
+  padding: 14px 4px;
+  background: #ffffff;
+}
+
+.num {
+  font-size: 22px;
+  font-weight: bold;
+  color: #003366;
+}
+
+.cap {
+  font-size: 11px;
+  color: #555555;
+}

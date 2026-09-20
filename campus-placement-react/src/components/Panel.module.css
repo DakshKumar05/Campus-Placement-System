@@ -1,0 +1,37 @@
+/* CSS Module: these class names are scoped to Panel.jsx and compiled to
+   unique names such as _panel_1x9k2, so they cannot clash with global CSS. */
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.heading {
+  margin: 0 0 10px;
+  color: #003366;
+  font-size: 15px;
+  border-bottom: 1px solid #dddddd;
+  padding-bottom: 8px;
+}
+
+.note {
+  font-size: 12px;
+  color: #555555;
+  margin: 0 0 10px;
+}
+
+.ribbon {
+  position: absolute;
+  top: -9px;
+  right: 14px;
+  background: #a5760f;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 3px;
+  z-index: 10;
+}
