@@ -9,9 +9,23 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 const CSV_HEADERS = ['Company', 'Role', 'Applied On', 'Status'];
 
 export default function ApplicationsPage() {
-  const { applications } = usePlacement();
+  const { user, applications } = usePlacement();
   const exportCsv = useCsvExport();
-  useDocumentTitle('CPMS - Applications');
+  useDocumentTitle('Campora - Applications');
+
+  if (!user) {
+    return (
+      <>
+        <TopBar title="Application Tracking" subtitle="Your applications are stored on the server." />
+        <Panel title="Sign In Required">
+          <p>Sign in to see the applications saved for your account.</p>
+          <div className="btn-row spaced-top">
+            <Link className="btn" to="/login">Go to Login</Link>
+          </div>
+        </Panel>
+      </>
+    );
+  }
 
   function handleExport() {
     const rows = applications.map((app) => [

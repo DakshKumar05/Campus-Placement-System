@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar.jsx';
-import Footer from './Footer.jsx';
 import ToastHost from './ToastHost.jsx';
 
 /* The frame every route renders inside. <Outlet /> is the slot the router
@@ -12,7 +11,6 @@ export default function Layout() {
       <Sidebar />
       <main className="main">
         <Outlet />
-        <Footer />
       </main>
       <ToastHost />
     </>

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Campus Placement Management System - React frontend",
+  "description": "Campora - Campus Placement Management System",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

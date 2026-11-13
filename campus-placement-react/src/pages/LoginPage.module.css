@@ -1,0 +1,163 @@
+/* CSS Module for the sign-in screen: a blue backdrop in the app's navy
+   palette with soft silk waves, a bold brand on the left and a frosted
+   card holding the form.
+   The shared Field component keeps its global class names, so the card
+   restyles them through :global(). */
+
+.page {
+  --ink: #0b2545;
+  --muted: #4f6480;
+  --accent: #00509e;
+  --accent-deep: #003366;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(135deg, #f3f8fd 0%, #d6e6f7 45%, #9fc1e6 100%);
+}
+
+.waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ---------- Hero + card ---------- */
+.content {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  gap: 48px;
+  padding: 48px 48px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.brand {
+  margin: 0 0 10px;
+  font-size: clamp(56px, 9vw, 116px);
+  line-height: 0.95;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -2px;
+  color: var(--ink);
+}
+
+.tagline {
+  margin: 0 0 28px;
+  max-width: 440px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.card {
+  justify-self: end;
+  width: 100%;
+  max-width: 420px;
+  padding: 34px 32px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 30px 60px rgba(0, 51, 102, 0.18);
+}
+
+.cardTitle { margin: 0; font-size: 26px; font-weight: 800; }
+.cardNote { margin: 6px 0 22px; font-size: 13.5px; color: var(--muted); }
+
+/* Segmented Student / Recruiter switch. */
+.roles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px;
+  margin-bottom: 22px;
+  border-radius: 999px;
+  background: #e6eef8;
+}
+.role,
+.roleActive {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.roleActive {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.15);
+}
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+
+.form :global(.field-label) { color: var(--ink); font-size: 12.5px; font-weight: 700; }
+.form :global(.field-inline .field-label) { font-weight: 500; color: var(--muted); }
+.form :global(.field-hint) { color: #7d8ea5; }
+.form :global(.input) {
+  font-size: 14px;
+  padding: 12px 14px;
+  border: 1px solid #cddbeb;
+  border-radius: 12px;
+  background: #f7fafd;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form :global(.input:focus) {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(0, 80, 158, 0.15);
+}
+.form :global(input[type='checkbox']) { accent-color: var(--accent); width: 16px; height: 16px; }
+
+.submit {
+  margin-top: 4px;
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 0;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  box-shadow: 0 12px 24px rgba(0, 51, 102, 0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.submit:hover { transform: translateY(-1px); box-shadow: 0 16px 30px rgba(0, 51, 102, 0.35); }
+.submit:focus-visible { outline: 3px solid rgba(0, 80, 158, 0.4); outline-offset: 2px; }
+
+.clear {
+  align-self: center;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.clear:hover { color: var(--accent); }
+
+/* ---------- Narrow screens: stack the hero above the card ---------- */
+@media (max-width: 860px) {
+  .content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 32px 20px 28px;
+  }
+  .card { justify-self: stretch; max-width: none; padding: 26px 22px; }
+  .tagline { margin-bottom: 20px; }
+}

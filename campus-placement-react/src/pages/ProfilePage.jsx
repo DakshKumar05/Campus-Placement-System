@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Panel from '../components/Panel.jsx';
 import Button from '../components/Button.jsx';
 import Field from '../components/Field.jsx';
@@ -26,18 +27,65 @@ function validateProfile(values) {
   return errors;
 }
 
-export default function ProfilePage() {
-  const { profile, setProfile } = usePlacement();
-  const showToast = useToast();
-  useDocumentTitle('CPMS - Profile');
+/* The page decides what to show; StudentProfile holds the form. The split is
+   needed because useForm must start from a loaded profile, and hooks cannot
+   be called conditionally. */
 
+export default function ProfilePage() {
+  const { user, profile, saveProfile } = usePlacement();
+  useDocumentTitle('Campora - Profile');
+
+  if (!user) {
+    return (
+      <>
+        <TopBar title="Student Profile" subtitle="The details recruiters see with your applications." />
+        <Panel title="Sign In Required">
+          <p>Sign in with your register number to load your profile from the server.</p>
+          <div className="btn-row spaced-top">
+            <Link className="btn" to="/login">Go to Login</Link>
+          </div>
+        </Panel>
+      </>
+    );
+  }
+
+  if (user.role !== 'student') {
+    return (
+      <>
+        <TopBar title="Student Profile" subtitle="Profiles belong to student accounts." />
+        <Panel title="Recruiter Account">
+          <p>You are signed in as recruiter <code>{user.username}</code>. Browse the postings or the admin queue instead.</p>
+        </Panel>
+      </>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <>
+        <TopBar title="Student Profile" subtitle="Loading your profile..." />
+        <Panel title="Student Profile"><p>Loading...</p></Panel>
+      </>
+    );
+  }
+
+  // key resets the form whenever a different profile is loaded.
+  return <StudentProfile key={profile.id} profile={profile} onSave={saveProfile} />;
+}
+
+function StudentProfile({ profile, onSave }) {
+  const showToast = useToast();
   const [editing, setEditing] = useState(false);
   const form = useForm(profile, validateProfile);
 
-  function handleValidSubmit(values) {
-    setProfile(values);
-    setEditing(false);
-    showToast('Profile updated', 'success');
+  async function handleValidSubmit(values) {
+    try {
+      await onSave(values);
+      setEditing(false);
+      showToast('Profile saved to the server', 'success');
+    } catch (error) {
+      showToast('Could not save: ' + error.message, 'error');
+    }
   }
 
   function cancelEdit() {
@@ -59,7 +107,7 @@ export default function ProfilePage() {
               <tr><td>CGPA</td><td>{profile.cgpa}</td></tr>
               <tr><td>Active Backlogs</td><td>{profile.backlogs}</td></tr>
               <tr><td>Graduation Year</td><td>{profile.gradYear}</td></tr>
-              <tr><td>Skills</td><td>{profile.skills}</td></tr>
+              <tr><td>Skills</td><td>{profile.skills || '—'}</td></tr>
             </tbody>
           </table>
           <div className="btn-row spaced-top">
@@ -72,7 +120,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      <TopBar title="Student Profile" subtitle="Editing — changes are held in state until you save." />
+      <TopBar title="Student Profile" subtitle="Editing — changes are sent to the server when you save." />
       <Panel
         title="Edit Profile"
         note="Text, number and select inputs, all controlled by the same useForm hook."

@@ -1,20 +1,19 @@
 import { useDebugValue, useMemo } from 'react';
-import { JOB_POSTINGS } from '../data/seed.js';
 
 /**
- * Applies the eligibility criteria to the job list.
- * The filtering runs inside useMemo, so it is repeated only when the
- * criteria actually change and not on every keystroke elsewhere.
+ * Applies the eligibility criteria to the job list loaded from the backend.
+ * The filtering runs inside useMemo, so it is repeated only when the jobs
+ * or the criteria actually change and not on every keystroke elsewhere.
  */
-export function useEligibleJobs(criteria) {
+export function useEligibleJobs(allJobs, criteria) {
   const jobs = useMemo(() => {
-    return JOB_POSTINGS.map((job) => ({
+    return allJobs.map((job) => ({
       ...job,
       eligible:
         job.ctc >= criteria.minCtc &&
         (criteria.branch === 'All' || job.branches.includes(criteria.branch)),
     }));
-  }, [criteria]);
+  }, [allJobs, criteria]);
 
   const eligibleCount = useMemo(
     () => jobs.filter((job) => job.eligible).length,

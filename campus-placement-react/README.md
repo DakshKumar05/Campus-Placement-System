@@ -1,4 +1,4 @@
-# Campus Placement Management System — React Frontend
+# Campora – Campus Placement Management System
 
 React (Vite) port of `campus-placement-system-dashboard_2.html`. Same visual
 design, rebuilt as routed pages with state-driven rendering instead of direct
@@ -10,6 +10,11 @@ events, forms, refs, styling, routing, the rules of hooks, the built-in hooks
 hooks and labelling them with `useDebugValue`.
 
 ## Running it
+
+The data comes from the Spring Boot backend in the parent folder. Start it
+first (run `CampusPlacementApplication` in IntelliJ, or `mvn spring-boot:run`
+in `Campus-Placement-System`); it listens on port 8080 and the Vite dev
+server proxies `/api` to it.
 
 ```bash
 npm install
@@ -29,7 +34,8 @@ src/
   pages/                   9 page components, one per route
   hooks/                   8 custom hooks
   context/                 ToastProvider, PlacementProvider
-  data/seed.js             seed data and formatDate()
+  data/api.js              fetch helpers for the Spring Boot REST API
+  data/seed.js             static lookups (branches, dashboard figures, nav links)
 ```
 
 ## Routes

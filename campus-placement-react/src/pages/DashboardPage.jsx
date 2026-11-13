@@ -15,7 +15,7 @@ const CSV_HEADERS = ['Company', 'Role', 'Applied On', 'Status'];
 export default function DashboardPage() {
   const { applications } = usePlacement();
   const exportCsv = useCsvExport();
-  useDocumentTitle('CPMS - Dashboard');
+  useDocumentTitle('Campora - Dashboard');
 
   // Ref + effect: start the animations when the stats scroll into view.
   const [statsRef, statsVisible] = useIntersectionObserver(0.2);

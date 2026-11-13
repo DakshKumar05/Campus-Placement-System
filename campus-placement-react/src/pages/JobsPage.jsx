@@ -10,15 +10,15 @@ import { useEligibleJobs } from '../hooks/useEligibleJobs.js';
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 
 export default function JobsPage() {
-  const { applications, criteria, applyToJob } = usePlacement();
+  const { user, jobs: allJobs, applications, criteria, applyToJob } = usePlacement();
   const showToast = useToast();
   const navigate = useNavigate();
-  useDocumentTitle('CPMS - Job Postings');
+  useDocumentTitle('Campora - Job Postings');
 
   // A controlled search box — one piece of local state, one event handler.
   const [search, setSearch] = useState('');
 
-  const { jobs, eligibleCount } = useEligibleJobs(criteria);
+  const { jobs, eligibleCount } = useEligibleJobs(allJobs, criteria);
 
   // Derived data: filter by the search text, then group by category.
   const grouped = useMemo(() => {
@@ -40,19 +40,25 @@ export default function JobsPage() {
     return [...map.entries()];
   }, [jobs, search]);
 
-  const appliedKeys = useMemo(
-    () => new Set(applications.map((app) => app.company + '|' + app.role)),
+  const appliedJobIds = useMemo(
+    () => new Set(applications.map((app) => app.jobId)),
     [applications]
   );
 
-  function handleApply(job) {
-    const added = applyToJob(job);
-    if (!added) {
-      showToast('Already applied to ' + job.company + ' - ' + job.role, 'warning');
+  async function handleApply(job) {
+    if (!user) {
+      showToast('Sign in as a student to apply', 'warning');
+      navigate('/login');
       return;
     }
-    showToast('Applied to ' + job.company + ' - ' + job.role, 'success');
-    navigate('/applications');
+    try {
+      await applyToJob(job);
+      showToast('Applied to ' + job.company + ' - ' + job.role, 'success');
+      navigate('/applications');
+    } catch (error) {
+      // The server explains why: already applied, or branch not eligible.
+      showToast(error.message, 'warning');
+    }
   }
 
   return (
@@ -109,7 +115,7 @@ export default function JobsPage() {
                   <JobRow
                     key={job.id}
                     job={job}
-                    applied={appliedKeys.has(job.company + '|' + job.role)}
+                    applied={appliedJobIds.has(job.id)}
                     onApply={handleApply}
                   />
                 ))}

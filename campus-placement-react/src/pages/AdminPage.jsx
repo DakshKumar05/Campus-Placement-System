@@ -18,27 +18,29 @@ function validateRemark(values) {
 export default function AdminPage() {
   const { adminTasks, resolveTask } = usePlacement();
   const showToast = useToast();
-  useDocumentTitle('CPMS - Admin');
+  useDocumentTitle('Campora - Admin');
 
   // One shared remark box; the buttons read its current value on click.
   const form = useForm({ remark: '' }, validateRemark);
 
-  function handleDecision(task, approved) {
+  async function handleDecision(task, approved) {
     if (task.pending <= 0) {
       showToast('No pending items for ' + task.task, 'warning');
       return;
     }
 
     const remark = form.values.remark.trim();
-    const remaining = task.pending - 1;
-    resolveTask(task.id, remark);
-    form.reset();
-
-    showToast(
-      (approved ? task.task + ' approved. ' : task.task + ' rejected. ') +
-        remaining + ' remaining.' + (remark ? ' Note: ' + remark : ''),
-      approved ? 'success' : 'error'
-    );
+    try {
+      const updated = await resolveTask(task.id, remark);
+      form.reset();
+      showToast(
+        (approved ? task.task + ' approved. ' : task.task + ' rejected. ') +
+          updated.pending + ' remaining.' + (remark ? ' Note: ' + remark : ''),
+        approved ? 'success' : 'error'
+      );
+    } catch (error) {
+      showToast(error.message, 'warning');
+    }
   }
 
   return (

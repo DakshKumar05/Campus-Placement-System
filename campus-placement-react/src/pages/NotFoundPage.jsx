@@ -6,7 +6,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 /* The catch-all route: <Route path="*" element={<NotFoundPage />} /> */
 
 export default function NotFoundPage() {
-  useDocumentTitle('CPMS - Page not found');
+  useDocumentTitle('Campora - Page not found');
 
   return (
     <>

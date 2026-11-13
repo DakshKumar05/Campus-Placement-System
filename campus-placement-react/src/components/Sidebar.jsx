@@ -1,16 +1,21 @@
 import { NavLink } from 'react-router-dom';
-import { NAV_LINKS } from '../data/seed.js';
+import { usePlacement } from '../context/PlacementContext.jsx';
+import { NAV_LINKS, ROLE_LABEL } from '../data/seed.js';
 
 /* Routing navigation. NavLink applies the "active" class itself by
-   comparing the current URL with `to`, which replaces the scroll listener
-   the HTML build used to highlight the current section. */
+   comparing the current URL with `to`. Only the links the signed-in
+   user's role may open are listed, so each role gets its own window. */
 
 export default function Sidebar() {
+  const { user } = usePlacement();
+  const links = NAV_LINKS.filter((link) => link.roles.includes(user.role));
+
   return (
     <nav className="sidebar" aria-label="Main navigation">
-      <h1>SRM Placement Cell</h1>
+      <h1>Campus Placement Management System</h1>
+      <p className="sidebar-portal">{ROLE_LABEL[user.role]} Portal</p>
       <ul>
-        {NAV_LINKS.map((link) => (
+        {links.map((link) => (
           <li key={link.to}>
             <NavLink
               to={link.to}

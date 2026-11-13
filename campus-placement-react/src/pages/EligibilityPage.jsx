@@ -21,15 +21,15 @@ function validateCriteria(values) {
 }
 
 export default function EligibilityPage() {
-  const { criteria, setCriteria } = usePlacement();
+  const { jobs, criteria, setCriteria } = usePlacement();
   const showToast = useToast();
   const navigate = useNavigate();
-  useDocumentTitle('CPMS - Eligibility');
+  useDocumentTitle('Campora - Eligibility');
 
   const form = useForm(criteria, validateCriteria);
 
   // Previews the result live, before the form is even submitted.
-  const { eligibleCount } = useEligibleJobs(form.values);
+  const { eligibleCount } = useEligibleJobs(jobs, form.values);
 
   function handleValidSubmit(values) {
     setCriteria(values);

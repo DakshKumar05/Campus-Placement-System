@@ -1,0 +1,125 @@
+/* CSS Module for RoundTimeline. Each step carries a state class that sets
+   --tone, and the node, connector and status text all read that one colour. */
+
+.summary {
+  font-size: 13px;
+  font-weight: bold;
+  color: #003366;
+  margin: 0 0 14px;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.step {
+  --tone: #9e9e9e;
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 4px;
+}
+
+/* Connector from the previous node into this one, coloured by this step. */
+.step + .step::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: calc(-50% + 18px);
+  right: calc(50% + 18px);
+  height: 3px;
+  background: var(--tone);
+}
+
+.node {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--tone);
+  background: #ffffff;
+  color: var(--tone);
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  gap: 2px;
+}
+
+.name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #222222;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--tone);
+}
+
+.date {
+  font-size: 11px;
+  color: #666666;
+}
+
+.cleared { --tone: #1e7a3c; }
+.cleared .node { background: var(--tone); color: #ffffff; }
+
+.scheduled { --tone: #a5760f; }
+.scheduled .node { box-shadow: 0 0 0 5px rgba(165, 118, 15, 0.2); }
+
+.upcoming { --tone: #003366; }
+.upcoming .node,
+.notReached .node { border-style: dashed; }
+
+.rejected { --tone: #a83232; }
+.rejected .node { background: var(--tone); color: #ffffff; }
+
+.notReached { --tone: #bbbbbb; }
+.notReached .name { color: #999999; }
+
+/* Narrow screens: stack the steps and run the connector down the left. */
+@media (max-width: 700px) {
+  .timeline { flex-direction: column; }
+
+  .step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    padding: 0 0 18px;
+  }
+
+  /* Steps differ in height here, so each step draws the line down to the
+     next one instead of the next step reaching back. */
+  .step + .step::before { display: none; }
+
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 34px;
+    bottom: 0;
+    left: 15px;
+    width: 3px;
+    background: var(--tone);
+  }
+
+  .rejected:not(:last-child)::after { background: #bbbbbb; }
+
+  .label { margin: 4px 0 0 12px; }
+}

@@ -1,5 +1,6 @@
 import Button from './Button.jsx';
 import { usePlacement } from '../context/PlacementContext.jsx';
+import { ROLE_LABEL } from '../data/seed.js';
 
 export default function TopBar({ title, subtitle, onExport }) {
   const { user, logout } = usePlacement();
@@ -13,7 +14,7 @@ export default function TopBar({ title, subtitle, onExport }) {
       <div className="btn-row">
         {user && (
           <span className="who">
-            {user.role === 'student' ? 'Student' : 'Recruiter'}: {user.username}
+            {ROLE_LABEL[user.role]}: {user.username}
           </span>
         )}
         <Button onClick={onExport}>Export All Data</Button>
